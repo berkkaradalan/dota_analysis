@@ -13,12 +13,20 @@ def migrade_mongodb(mongo_client:MongoClient):
     collections = mongodb.list_collection_names()
     if "user" not in collections:
         mongodb.create_collection("user")
+        user_collection = mongodb["user"]
+        user_collection.create_index("AccountID", unique=True)
     if "hero" not in collections:
         mongodb.create_collection("hero")
+        hero_collection = mongodb["hero"]
+        hero_collection.create_index("HeroID", unique=True)
     if "match" not in collections:
         mongodb.create_collection("match")
+        match_collection = mongodb["match"]
+        match_collection.create_index("MatchID", unique=True)
     if "winlose" not in collections:
         mongodb.create_collection("winlose")
+        win_lose_collection = mongodb["winlose"]
+        win_lose_collection.create_index("AccountID", unique=True)
 
 def start_app():
     migrade_mongodb(mongo_client)
