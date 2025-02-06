@@ -70,7 +70,6 @@ class OpenDotaService:
                 Kills=match["kills"],
                 Deaths=match["deaths"],
                 Assists=match["assists"],
-                AverageRank=int(match["average_rank"]),
             )
             await MatchRepository(self.match_collection).create_(match_data)
         return {"message":matches}

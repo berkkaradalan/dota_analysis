@@ -16,4 +16,3 @@ class Match(BaseModel):
     Kills:             int
     Deaths:            int
     Assists:           int
-    AverageRank:       int

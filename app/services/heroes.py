@@ -1,6 +1,6 @@
 from app.repository.heroes_repository import HeroRepository
 from app.domain.models.models import Hero
-from app.bootstrap.bootstrap import user_collection, win_lose_collection
+from app.bootstrap.bootstrap import user_collection, win_lose_collection, hero_collection, match_collection
 from .open_dota import OpenDotaService
 
 class HeroesService:
@@ -13,7 +13,7 @@ class HeroesService:
             return {"message":Hero(**hero)}
         
         if not hero:
-            service = OpenDotaService(self, user_collection=user_collection,win_lose_collection=win_lose_collection)
+            service = OpenDotaService(self, user_collection=user_collection,win_lose_collection=win_lose_collection, match_collection=match_collection)
             return await service.GetHeroByID(hero_id=hero_id)
 
         return {"message":"raise exception here"}

@@ -1,4 +1,4 @@
-from app.bootstrap.bootstrap import win_lose_collection, user_collection
+from app.bootstrap.bootstrap import win_lose_collection, user_collection, match_collection
 from app.repository.user_wl_repository import UserWinLoseRepository
 from .open_dota import OpenDotaService
 from app.domain.models.models import UserWinLoose
@@ -13,7 +13,7 @@ class UserWinLoseService:
             return {"message": UserWinLoose(**user)}
         
         if not user:
-            service = OpenDotaService(self, win_lose_collection=win_lose_collection, user_collection=user_collection)
+            service = OpenDotaService(self, win_lose_collection=win_lose_collection, user_collection=user_collection, match_collection=match_collection)
             return await service.GetUserWinLoseByID(steam_id=steam_id)
-        
+
         return {"message":"raise exception here"}
