@@ -1,14 +1,16 @@
 import requests
-from app.domain.models.models import Hero, User
+from app.domain.models.models import Hero, User, UserWinLoose, Match
 from app.repository.heroes_repository import HeroRepository
 from app.repository.user_repository import UserRepository
-from app.bootstrap.bootstrap import hero_collection
-from app.bootstrap.bootstrap import user_collection
+from app.repository.match_repository import MatchRepository
+from app.bootstrap.bootstrap import hero_collection, user_collection, win_lose_collection, match_collection
 
 class OpenDotaService:
-    def __init__(self, heroes_collection, user_collection):
+    def __init__(self, heroes_collection, user_collection, win_lose_collection, match_collection):
         self.hero_collection = hero_collection
         self.user_collection = user_collection
+        self.win_lose_collection = win_lose_collection
+        self.match_collection = match_collection
 
     async def GetHeroByID(self, hero_id:str) -> dict:
         heroes = requests.get("https://api.opendota.com/api/heroes").json()
@@ -40,3 +42,35 @@ class OpenDotaService:
             return user_data
 
         return {"message":"User not found"}
+    
+    async def GetUserWinLoseByID(self, steam_id:str) -> dict:
+        user = requests.get(f"https://api.opendota.com/api/players/{steam_id}/wl").json()
+        if "win" in user:
+            win_lose_data = UserWinLoose(
+                AccountID=steam_id,
+                Win=user["win"],
+                Lose=user["lose"]
+            )
+            await UserRepository(self.win_lose_collection).create_(win_lose_data)
+            return win_lose_data
+        return {"message":"User not found"}
+    
+    async def GetUserMatchByID(self, steam_id:str) -> dict:
+        matches = requests.get(f"https://api.opendota.com/api/players/{steam_id}/matches").json()
+        for match in matches:
+            match_data = Match(
+                AccountID=steam_id,
+                MatchID=str(match["match_id"]),
+                PlayerSlot=str(match["player_slot"]),
+                RadiantWin=match["radiant_win"],
+                Duration=str(match["duration"]),
+                GameMode=str(match["game_mode"]),
+                HeroID=str(match["hero_id"]),
+                StartTime=match["start_time"],
+                Kills=match["kills"],
+                Deaths=match["deaths"],
+                Assists=match["assists"],
+                AverageRank=int(match["average_rank"]),
+            )
+            await MatchRepository(self.match_collection).create_(match_data)
+        return {"message":matches}

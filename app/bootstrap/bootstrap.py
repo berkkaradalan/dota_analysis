@@ -17,6 +17,8 @@ def migrade_mongodb(mongo_client:MongoClient):
         mongodb.create_collection("hero")
     if "match" not in collections:
         mongodb.create_collection("match")
+    if "winlose" not in collections:
+        mongodb.create_collection("winlose")
 
 def start_app():
     migrade_mongodb(mongo_client)
@@ -25,3 +27,4 @@ def start_app():
 user_collection = mongodb["user"]
 hero_collection = mongodb["hero"]
 match_collection = mongodb["match"]
+win_lose_collection = mongodb["winlose"]

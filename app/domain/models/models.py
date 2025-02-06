@@ -1,7 +1,10 @@
 from .heroes import Hero
-from .user import User
+from .user import User, UserWinLoose
+from .match import Match
 
 __all__ = [ 
     "Hero",
-    "User"
+    "User",
+    "UserWinLoose",
+    "Match",
 ]

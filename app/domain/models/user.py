@@ -13,5 +13,6 @@ class User(BaseModel):
     SteamAvatar:       str
 
 class UserWinLoose(BaseModel):
-    Win: int
-    Loose: int
+    AccountID:         str
+    Win:                int
+    Lose:              int
