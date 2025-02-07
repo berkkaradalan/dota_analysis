@@ -7,8 +7,8 @@ class MatchService:
     def __init__(self, user_collection):
         self.matchRepository = MatchRepository(user_collection)
 
-    async def get_(self, steam_id: str) -> dict:
-        matches = await self.matchRepository.get_(steam_id)
+    async def get_(self, steam_id: str, limit:int, page:int) -> dict:
+        matches = await self.matchRepository.get_(steam_id, limit, page)
 
         if matches:
             return {"message": [Match(**match) for match in matches]} 
