@@ -31,6 +31,10 @@ def migrade_mongodb(mongo_client:MongoClient):
         mongodb.create_collection("favorite_heroes")
         # favorite_heroes_collection = mongodb["favorite_heroes"]
         # favorite_heroes_collection.create_index("AccountID")
+    if "detailed_match" not in collections:
+        mongodb.create_collection("detailed_match")
+        detailed_match_collection = mongodb["detailed_match"]
+        detailed_match_collection.create_index("MatchID", unique=True)
 
 def start_app():
     migrade_mongodb(mongo_client)
@@ -41,3 +45,4 @@ hero_collection = mongodb["hero"]
 match_collection = mongodb["match"]
 win_lose_collection = mongodb["winlose"]
 favorite_heroes_collection = mongodb["favorite_heroes"]
+detailed_match_collection = mongodb["detailed_match"]

@@ -1,6 +1,6 @@
 from .heroes import Hero, TopHeroes
 from .user import User, UserWinLoose
-from .match import Match
+from .match import Match, DetailedMatch
 
 __all__ = [ 
     "Hero",
@@ -8,4 +8,5 @@ __all__ = [
     "UserWinLoose",
     "Match",
     "TopHeroes",
+    "DetailedMatch",
 ]

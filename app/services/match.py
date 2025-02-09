@@ -15,3 +15,7 @@ class MatchService:
         
         service = OpenDotaService(self, user_collection=user_collection, win_lose_collection=win_lose_collection, match_collection=match_collection)
         return await service.GetUserMatchByID(steam_id=steam_id, limit=limit, page=page)
+
+class DetailedMatchService:
+    def __init__(self, match_collection):
+        self.matchRepository = MatchRepository(match_collection)
