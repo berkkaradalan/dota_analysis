@@ -1,6 +1,7 @@
 from .heroes import Hero, TopHeroes
 from .user import User, UserWinLoose
 from .match import Match, DetailedMatch
+from .game import Items, Abilities, Mods
 
 __all__ = [ 
     "Hero",
@@ -9,4 +10,7 @@ __all__ = [
     "Match",
     "TopHeroes",
     "DetailedMatch",
+    "Items",
+    "Abilities",
+    "Mods"
 ]
