@@ -1,4 +1,4 @@
-from app.bootstrap.bootstrap import user_collection, win_lose_collection,match_collection
+from app.bootstrap.bootstrap import user_collection, win_lose_collection,match_collection,detailed_match_collection
 from app.repository.user_repository import UserRepository
 from .open_dota import OpenDotaService
 from app.domain.models.models import User
@@ -13,7 +13,7 @@ class UserService:
             return {"message": User(**user)}
         
         if not user:
-            service = OpenDotaService(self, user_collection=user_collection, win_lose_collection=win_lose_collection, match_collection=match_collection)
+            service = OpenDotaService(self, user_collection=user_collection, win_lose_collection=win_lose_collection, match_collection=match_collection,detailed_match_collection=detailed_match_collection)
             return await service.GetUserByID(steam_id=steam_id)
         
         return {"message":"raise exception here"}

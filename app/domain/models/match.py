@@ -18,6 +18,7 @@ class Match(BaseModel):
     Assists:           int
 
 class DetailedMatch(BaseModel):
+    MatchID:           str
     AccountID:         str
     HeroID:            str
     Item0:             int
@@ -49,5 +50,4 @@ class DetailedMatch(BaseModel):
     Win:               bool
     Lose:              bool
     KillDeathAssist:   float
-    
-    
+    CollectionHash:    str

@@ -1,18 +1,20 @@
 import requests
-from app.domain.models.models import Hero, User, UserWinLoose, Match, TopHeroes
+from app.utils.utils import get_hash
+from app.domain.models.models import Hero, User, UserWinLoose, Match, TopHeroes, DetailedMatch
 from app.repository.heroes_repository import HeroRepository
 from app.repository.user_repository import UserRepository
-from app.repository.match_repository import MatchRepository
+from app.repository.match_repository import MatchRepository, DetailedMatchRepository
 from app.repository.favorite_heroes_repository import FavoriteHeroesRepository
 from pymongo.errors import DuplicateKeyError
-from app.bootstrap.bootstrap import hero_collection, user_collection, win_lose_collection, match_collection, favorite_heroes_collection
+from app.bootstrap.bootstrap import hero_collection, user_collection, win_lose_collection, match_collection, favorite_heroes_collection, detailed_match_collection
 
 class OpenDotaService:
-    def __init__(self, heroes_collection, user_collection, win_lose_collection, match_collection):
+    def __init__(self, heroes_collection, user_collection, win_lose_collection, match_collection, detailed_match_collection):
         self.hero_collection = hero_collection
         self.user_collection = user_collection
         self.win_lose_collection = win_lose_collection
         self.match_collection = match_collection
+        self.detailed_match_collection = detailed_match_collection
 
     async def GetHeroByID(self, hero_id:str) -> dict:
         heroes = requests.get("https://api.opendota.com/api/heroes").json()
@@ -95,3 +97,49 @@ class OpenDotaService:
             await FavoriteHeroesRepository(favorite_heroes_collection).create_(hero_data)
             result.append(hero_data)
         return {"message":result}
+    
+    async def GetDetailedMatchByID(self, match_id: str, steam_id:str) -> dict:
+        match = requests.get(f"https://api.opendota.com/api/matches/{match_id}").json()
+        if "players" in match:
+            match = match["players"]
+            player_data = next((player for player in match if player.get('account_id') == int(steam_id)), None)
+            if player_data:
+                detailed_match_data = DetailedMatch(
+                    MatchID=match_id,
+                    AccountID=steam_id,
+                    HeroID=str(player_data["hero_id"]),
+                    Item0=player_data["item_0"],
+                    Item1=player_data["item_1"],
+                    Item2=player_data["item_2"],
+                    Item3=player_data["item_3"],
+                    Item4=player_data["item_4"],
+                    Item5=player_data["item_5"],
+                    Kills=player_data["kills"],
+                    Assists=player_data["assists"],
+                    Death=player_data["deaths"],
+                    LastHits=player_data["last_hits"],
+                    Denies=player_data["denies"],
+                    GoldPerMinute=player_data["gold_per_min"],
+                    XPPerMinute=player_data["xp_per_min"],
+                    Level=player_data["level"],
+                    NetWorth=player_data["net_worth"],
+                    HeroDamage=player_data["hero_damage"],
+                    TowerDamage=player_data["tower_damage"],
+                    HeroHealing=player_data["hero_healing"],
+                    Gold=player_data["gold"],
+                    GoldSpent=player_data["gold_spent"],
+                    AbilityUpgrades=player_data["ability_upgrades_arr"],
+                    MatchStartTime=player_data["start_time"],
+                    MatchDuration=player_data["duration"],
+                    GameMode=player_data["game_mode"],
+                    IsRadiant=player_data["isRadiant"],
+                    RadiantWin=player_data["radiant_win"],
+                    Win=player_data["win"],
+                    Lose=player_data["lose"],
+                    KillDeathAssist=player_data["kda"],
+                    CollectionHash=str(match_id + steam_id)
+            )   
+                await DetailedMatchRepository(self.detailed_match_collection).create_(detailed_match=detailed_match_data)
+                return detailed_match_data
+        
+        return {"message":"Match or User not found"}

@@ -34,7 +34,7 @@ def migrade_mongodb(mongo_client:MongoClient):
     if "detailed_match" not in collections:
         mongodb.create_collection("detailed_match")
         detailed_match_collection = mongodb["detailed_match"]
-        detailed_match_collection.create_index("MatchID", unique=True)
+        detailed_match_collection.create_index("CollectionHash", unique=True)
 
 def start_app():
     migrade_mongodb(mongo_client)

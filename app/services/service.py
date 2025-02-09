@@ -1,7 +1,7 @@
 from .user import UserService
 from .heroes import HeroesService
 from .user_wl import UserWinLoseService
-from .match import MatchService
+from .match import MatchService, DetailedMatchService
 
 
 __all__ = [
@@ -9,4 +9,5 @@ __all__ = [
     "UserService",
     "UserWinLoseService",
     "MatchService",
+    "DetailedMatchService",
     ] 
