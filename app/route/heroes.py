@@ -9,3 +9,8 @@ heroes_router = APIRouter()
 async def get_heroes(hero_id:str):
     service = HeroesService(hero_collection)
     return await service.GetHeroByID(hero_id=hero_id)
+
+@heroes_router.get("/favorites/{steam_id}")
+async def get_favorite_heroes(steam_id:str):
+    service = HeroesService(hero_collection)
+    return await service.GetFavoriteHeroes(steam_id=steam_id)

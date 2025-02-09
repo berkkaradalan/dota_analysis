@@ -1,9 +1,11 @@
 import requests
-from app.domain.models.models import Hero, User, UserWinLoose, Match
+from app.domain.models.models import Hero, User, UserWinLoose, Match, TopHeroes
 from app.repository.heroes_repository import HeroRepository
 from app.repository.user_repository import UserRepository
 from app.repository.match_repository import MatchRepository
-from app.bootstrap.bootstrap import hero_collection, user_collection, win_lose_collection, match_collection
+from app.repository.favorite_heroes_repository import FavoriteHeroesRepository
+from pymongo.errors import DuplicateKeyError
+from app.bootstrap.bootstrap import hero_collection, user_collection, win_lose_collection, match_collection, favorite_heroes_collection
 
 class OpenDotaService:
     def __init__(self, heroes_collection, user_collection, win_lose_collection, match_collection):
@@ -55,8 +57,9 @@ class OpenDotaService:
             return win_lose_data
         return {"message":"User not found"}
     
-    async def GetUserMatchByID(self, steam_id:str) -> dict:
-        matches = requests.get(f"https://api.opendota.com/api/players/{steam_id}/matches").json()
+    async def GetUserMatchByID(self, steam_id: str, limit: int, page: int) -> dict:
+        offset = (page - 1) * limit
+        matches = requests.get(f"https://api.opendota.com/api/players/{steam_id}/matches?limit={limit}&offset={offset}").json()
         for match in matches:
             match_data = Match(
                 AccountID=steam_id,
@@ -71,5 +74,24 @@ class OpenDotaService:
                 Deaths=match["deaths"],
                 Assists=match["assists"],
             )
-            await MatchRepository(self.match_collection).create_(match_data)
-        return {"message":matches}
+            try:
+                await MatchRepository(self.match_collection).create_(match_data)
+            except DuplicateKeyError:
+                pass
+        return {"message": matches}
+    
+    async def GetFavoriteHeroes(self, steam_id:str) -> dict:
+        heroes = requests.get(f"https://api.opendota.com/api/players/{steam_id}/heroes").json()
+        top_heroes = sorted(heroes, key=lambda x: x["games"], reverse=True)[:3]
+        result = []
+        for hero in top_heroes:
+            hero_data = TopHeroes(
+                AccountID=steam_id,
+                HeroID=str(hero["hero_id"]),
+                LastPlayed=hero["last_played"],
+                Games=hero["games"],
+                GamesWon=hero["win"]
+            )
+            await FavoriteHeroesRepository(favorite_heroes_collection).create_(hero_data)
+            result.append(hero_data)
+        return {"message":result}

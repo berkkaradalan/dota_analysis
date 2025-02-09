@@ -23,3 +23,10 @@ class Hero(BaseModel):
     HeroRoles:      List[HeroRoles]
     AttackType:     AttackTypes
     HeroImageURL:   str
+
+class TopHeroes(BaseModel):
+    AccountID:      str
+    HeroID:         str
+    LastPlayed:     float
+    Games:          int
+    GamesWon:       int

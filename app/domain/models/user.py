@@ -9,7 +9,7 @@ class User(BaseModel):
     PersonaName:       str
     Name:              Optional[str]
     SteamID:           str
-    LastLogin:         datetime
+    LastLogin:         Optional[datetime]
     SteamAvatar:       str
 
 class UserWinLoose(BaseModel):

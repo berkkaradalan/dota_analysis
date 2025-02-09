@@ -1,4 +1,4 @@
-from .heroes import Hero
+from .heroes import Hero, TopHeroes
 from .user import User, UserWinLoose
 from .match import Match
 
@@ -7,4 +7,5 @@ __all__ = [
     "User",
     "UserWinLoose",
     "Match",
+    "TopHeroes",
 ]

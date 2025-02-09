@@ -14,4 +14,4 @@ class MatchService:
             return {"message": [Match(**match) for match in matches]} 
         
         service = OpenDotaService(self, user_collection=user_collection, win_lose_collection=win_lose_collection, match_collection=match_collection)
-        return await service.GetUserMatchByID(steam_id=steam_id)
+        return await service.GetUserMatchByID(steam_id=steam_id, limit=limit, page=page)
