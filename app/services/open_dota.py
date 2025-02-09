@@ -1,5 +1,4 @@
 import requests
-from app.utils.utils import get_hash
 from app.domain.models.models import Hero, User, UserWinLoose, Match, TopHeroes, DetailedMatch
 from app.repository.heroes_repository import HeroRepository
 from app.repository.user_repository import UserRepository
