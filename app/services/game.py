@@ -22,7 +22,7 @@ class GameService:
         return Abilities(
             AbilityID = ability["id"],
             AbilityName = ability["name"],
-            AbilityImage = f"https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/{ability["name"]}.png"
+            AbilityImage = f"https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/{ability['name']}.png"
         )
     
     async def GetModsByID(self, mod_id:int) -> dict:
