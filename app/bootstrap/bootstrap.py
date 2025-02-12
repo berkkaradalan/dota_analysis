@@ -29,8 +29,6 @@ def migrade_mongodb(mongo_client:MongoClient):
         win_lose_collection.create_index("AccountID", unique=True)
     if "favorite_heroes" not in collections:
         mongodb.create_collection("favorite_heroes")
-        # favorite_heroes_collection = mongodb["favorite_heroes"]
-        # favorite_heroes_collection.create_index("AccountID")
     if "detailed_match" not in collections:
         mongodb.create_collection("detailed_match")
         detailed_match_collection = mongodb["detailed_match"]
@@ -38,7 +36,7 @@ def migrade_mongodb(mongo_client:MongoClient):
 
 def start_app():
     migrade_mongodb(mongo_client)
-    # uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    setup_logging()
 
 user_collection = mongodb["user"]
 hero_collection = mongodb["hero"]
