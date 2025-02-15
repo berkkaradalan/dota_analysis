@@ -5,7 +5,7 @@ from app.repository.user_repository import UserRepository
 from app.repository.match_repository import MatchRepository, DetailedMatchRepository
 from app.repository.favorite_heroes_repository import FavoriteHeroesRepository
 from pymongo.errors import DuplicateKeyError
-from app.bootstrap.bootstrap import hero_collection, user_collection, win_lose_collection, match_collection, favorite_heroes_collection, detailed_match_collection
+from app.bootstrap.bootstrap import hero_collection, user_collection, win_lose_collection, match_collection, favorite_heroes_collection, detailed_match_collection, env_variables
 
 class OpenDotaService:
     def __init__(self, heroes_collection, user_collection, win_lose_collection, match_collection, detailed_match_collection):
@@ -16,7 +16,7 @@ class OpenDotaService:
         self.detailed_match_collection = detailed_match_collection
 
     async def GetHeroByID(self, hero_id:str) -> dict:
-        heroes = requests.get("https://api.opendota.com/api/heroes").json()
+        heroes = requests.get(f"{env_variables.OPEN_DOTA_API_URL}/heroes").json()
         for hero in heroes:
             if hero["id"] == int(hero_id):
                 hero_data = Hero(
@@ -24,14 +24,14 @@ class OpenDotaService:
                     HeroName = hero["localized_name"],
                     HeroRoles = hero["roles"],
                     AttackType = hero["attack_type"],
-                    HeroImageURL = f"https://cdn.dota2.com/apps/dota2/images/heroes/{hero['name'].replace('npc_dota_hero_', '')}_full.png"
+                    HeroImageURL = f"{env_variables.DOTA_CDN_URL}/apps/dota2/images/heroes/{hero['name'].replace('npc_dota_hero_', '')}_full.png"
                 )
                 await HeroRepository(self.hero_collection).create_(hero_data)
                 return hero_data
         return {"message":"Hero not found"}
 
     async def GetUserByID(self, steam_id:str) -> dict:
-        user = requests.get(f"https://api.opendota.com/api/players/{steam_id}").json()
+        user = requests.get(f"{env_variables.OPEN_DOTA_API_URL}//players/{steam_id}").json()
         if "profile" in user:
             user_data = User(
                 AccountID=steam_id,
@@ -47,7 +47,7 @@ class OpenDotaService:
         return {"message":"User not found"}
     
     async def GetUserWinLoseByID(self, steam_id:str) -> dict:
-        user = requests.get(f"https://api.opendota.com/api/players/{steam_id}/wl").json()
+        user = requests.get(f"{env_variables.OPEN_DOTA_API_URL}/players/{steam_id}/wl").json()
         if "win" in user:
             win_lose_data = UserWinLoose(
                 AccountID=steam_id,
@@ -60,7 +60,7 @@ class OpenDotaService:
     
     async def GetUserMatchByID(self, steam_id: str, limit: int, page: int) -> dict:
         offset = (page - 1) * limit
-        matches = requests.get(f"https://api.opendota.com/api/players/{steam_id}/matches?limit={limit}&offset={offset}").json()
+        matches = requests.get(f"{env_variables.OPEN_DOTA_API_URL}/players/{steam_id}/matches?limit={limit}&offset={offset}").json()
         for match in matches:
             match_data = Match(
                 AccountID=steam_id,
@@ -82,7 +82,7 @@ class OpenDotaService:
         return {"message": matches}
     
     async def GetFavoriteHeroes(self, steam_id:str) -> dict:
-        heroes = requests.get(f"https://api.opendota.com/api/players/{steam_id}/heroes").json()
+        heroes = requests.get(f"{env_variables.OPEN_DOTA_API_URL}/players/{steam_id}/heroes").json()
         top_heroes = sorted(heroes, key=lambda x: x["games"], reverse=True)[:3]
         result = []
         for hero in top_heroes:
@@ -98,7 +98,7 @@ class OpenDotaService:
         return {"message":result}
     
     async def GetDetailedMatchByID(self, match_id: str, steam_id:str) -> dict:
-        match = requests.get(f"https://api.opendota.com/api/matches/{match_id}").json()
+        match = requests.get(f"{env_variables.OPEN_DOTA_API_URL}/matches/{match_id}").json()
         if "players" in match:
             match = match["players"]
             player_data = next((player for player in match if player.get('account_id') == int(steam_id)), None)

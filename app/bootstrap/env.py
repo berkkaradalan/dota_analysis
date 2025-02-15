@@ -8,3 +8,5 @@ class env_variables():
     PORT = os.getenv("PORT")
     URL = os.getenv("URL")
     ORIGINS = os.getenv("ORIGINS")
+    OPEN_DOTA_API_URL = os.getenv("OPEN_DOTA_API_URL")
+    DOTA_CDN_URL = os.getenv("DOTA_CDN_URL")
